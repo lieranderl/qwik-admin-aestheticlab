@@ -16,6 +16,10 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
   // Filter technicians by search term
   const filteredTechs = useSignal<TechnicianResponse[]>([]);
 
+  useTask$(() => {
+    selectedIds.value = technicians.map((tech) => tech.id);
+  });
+
   useTask$(({ track }) => {
     track(() => search.value);
     filteredTechs.value = technicians.filter((tech) =>

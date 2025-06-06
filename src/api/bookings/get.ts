@@ -3,9 +3,12 @@ import { APIResponse, BookingResponse, ClientResponse, ServiceResponse, Technici
 
 // fetch all services
 export async function fetchServices(): Promise<APIResponse<ServiceResponse[]>> {
+
+  // if active is true, then fetch only active services
   const { data, error } = await supabaseBrowser
     .from("services")
-    .select(`id, name, price, duration, active`);
+    .select(`id, name, price, duration, active`)
+    .eq("active", true);
 
   console.log("Services fetched", data, error);
 
@@ -41,7 +44,8 @@ export async function fetchClient(client_id: string): Promise<APIResponse<Client
 export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse[]>> {
   const { data, error } = await supabaseBrowser
     .from("technicians")
-    .select(`id, name, email, role`);
+    .select(`id, name, email, role, active`)
+    .eq("active", true);
 
   console.log("Technicians fetched", data, error);
 
@@ -54,30 +58,10 @@ export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse
   return { success: true, data: result };
 }
 
-export async function fetchTechnician(query: URLSearchParams): Promise<APIResponse<TechnicianResponse[]>> {
-  const technician_id = query.get("technician_id");
-  if (!technician_id) {
-    // fetch all technicians if no id is provided
-    console.log("Missing technician_id parameter");
-    return await fetchTechnicians();
-  }
-  const { data, error } = await supabaseBrowser
-    .from("technicians")
-    .select(`id, name, email, role`)
-    .eq("id", technician_id);
-
-  console.log("Technician details fetched", data, error);
-
-  if (error) {
-    return { success: false, error: error.message };
-  }
-
-  return { success: true, data: data };
-}
 
 export async function fetchBookings(technician_id: string, technician_name: string, services: ServiceResponse[], from: string, to: string): Promise<APIResponse<BookingResponse[]>> {
 
-  console.log("Fetching bookings");
+  console.log("Fetching bookings", technician_id, technician_name, services, from, to);
 
   let db_query = supabaseBrowser
     .from("bookings")
@@ -104,7 +88,7 @@ export async function fetchBookings(technician_id: string, technician_name: stri
     client_name: b.clients.name,
     client_phone: b.clients.phone,
     client_email: b.clients.email,
-    technician_name: technician_name,   
+    technician_name: technician_name,
     color: color,
     services_names: services.filter((s: ServiceResponse) => b.services.includes(s.id)).map((s: ServiceResponse) => s.name),
   }));
@@ -112,19 +96,3 @@ export async function fetchBookings(technician_id: string, technician_name: stri
   return { success: true, data: result };
 }
 
-
-// fetch service details by id
-export async function fetchService(service_id: string): Promise<APIResponse<ServiceResponse>> {
-  const { data, error } = await supabaseBrowser
-    .from("services")
-    .select(`id, name, price, duration, active`)
-    .eq("id", service_id);
-
-  console.log("Service details fetched", data, error);
-
-  if (error) {
-    return { success: false, error: error.message };
-  }
-
-  return { success: true, data: data[0] };
-}

@@ -1,4 +1,4 @@
-import { component$, useSignal, noSerialize, type NoSerialize, useVisibleTask$, useStore } from "@builder.io/qwik";
+import { component$, useSignal, noSerialize, type NoSerialize, useVisibleTask$, useStore, Signal } from "@builder.io/qwik";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -8,10 +8,16 @@ import luxonPlugin from "@fullcalendar/luxon3";
 import { BookingResponse } from "~/types";
 import { DateTime } from 'luxon';
 
-export const BookingCalendar = component$(({ events }: { events: BookingResponse[] }) => {
+
+export type CalendarProps = {
+    events: BookingResponse[],
+    viewSig: Signal<string>,
+    startDate: Signal<string>
+}
+
+export const BookingCalendar = component$(({ events, viewSig, startDate }: CalendarProps) => {
     const calendarRef = useSignal<HTMLElement>();
     const calendarInstance = useSignal<NoSerialize<Calendar> | null>(null);
-    const state = useStore({ view: "timeGridWeek" });
 
     const modalRef = useSignal<HTMLDialogElement>();
     const modal = useStore({
@@ -24,13 +30,11 @@ export const BookingCalendar = component$(({ events }: { events: BookingResponse
         },
     });
 
-    useVisibleTask$(({ track }) => {
-        track(() => events);
-        track(() => state.view);
+    useVisibleTask$(() => {
         if (!calendarInstance.value && calendarRef.value) {
             const calendar = new Calendar(calendarRef.value, {
                 plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, luxonPlugin],
-                initialView: state.view,
+                initialView: viewSig.value,
                 titleFormat: 'LLLL d, yyyy',
                 headerToolbar: {
                     left: "prev,next today",
@@ -80,12 +84,21 @@ export const BookingCalendar = component$(({ events }: { events: BookingResponse
                 select: function (info) {
                     console.log(info);
                     modalRef.value?.showModal();
-                }
+                },
+                datesSet: (info) => {
+                    console.log("Current view:", info.view.type);
+                    viewSig.value = info.view.type
+                    startDate.value = info.startStr
+                    console.log("Start date:", info.startStr)
+                },
             });
             calendar.render();
             calendarInstance.value = noSerialize(calendar);
         }
+    });
 
+    useVisibleTask$(({track})=>{
+        track(()=>events)
         const calendar = calendarInstance.value!;
         calendar.removeAllEvents();
         events.forEach((b) => {
@@ -99,7 +112,7 @@ export const BookingCalendar = component$(({ events }: { events: BookingResponse
             });
         });
 
-    });
+    })
 
     return <>
 
