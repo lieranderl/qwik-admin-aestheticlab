@@ -1,23 +1,26 @@
-import { component$, useSignal, noSerialize, type NoSerialize, useVisibleTask$, useStore, Signal } from "@builder.io/qwik";
-import { Calendar } from "@fullcalendar/core";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import luxonPlugin from "@fullcalendar/luxon3";
-import { BookingResponse } from "~/types";
+import { component$, useSignal, noSerialize, type NoSerialize, useStore, Signal, useOnDocument, $, useTask$ } from "@builder.io/qwik";
+import { Calendar, DateSelectArg, EventClickArg } from "@fullcalendar/core";
+import { TechnicianResponse } from "~/types";
 import { DateTime } from 'luxon';
+import { fetchBookings } from "~/api/bookings/get";
+import { useServices } from "~/routes/layout";
+import { AestheticCalendar } from "./calendar-init";
+
 
 
 export type CalendarProps = {
-    events: BookingResponse[],
-    viewSig: Signal<string>,
-    startDate: Signal<string>
+    selectedTechnicians: Signal<TechnicianResponse[]>;
 }
 
-export const BookingCalendar = component$(({ events, viewSig, startDate }: CalendarProps) => {
+export const BookingCalendar = component$(({ selectedTechnicians }: CalendarProps) => {
     const calendarRef = useSignal<HTMLElement>();
     const calendarInstance = useSignal<NoSerialize<Calendar> | null>(null);
+    const services = useServices();
+
+    const viewSig = useSignal("timeGridWeek")
+    const startDate = useSignal(new Date);
+    const endDate = useSignal(new Date);
+
 
     const modalRef = useSignal<HTMLDialogElement>();
     const modal = useStore({
@@ -30,88 +33,65 @@ export const BookingCalendar = component$(({ events, viewSig, startDate }: Calen
         },
     });
 
-    useVisibleTask$(() => {
+    const EventClick = $((info: EventClickArg) => {
+        const event = info.event;
+        console.log(event.start);
+        console.log(event.start?.toISOString());
+        modal.event = {
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            duration: (event.end!.getTime() - event.start!.getTime()) / 60000 || 0,
+        };
+        modalRef.value?.showModal();
+        info.jsEvent.preventDefault();
+    });
+
+    const SelectClick = $((info: DateSelectArg) => {
+        console.log(info);
+        modalRef.value?.showModal();
+    })
+
+
+    useOnDocument('DOMContentLoaded', $(() => {
         if (!calendarInstance.value && calendarRef.value) {
-            const calendar = new Calendar(calendarRef.value, {
-                plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, luxonPlugin],
-                initialView: viewSig.value,
-                titleFormat: 'LLLL d, yyyy',
-                headerToolbar: {
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
-                },
-                events: events.map((b) => ({
-                    id: b.id,
-                    title: b.client_name,
-                    start: b.datetime,
-                    end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
-                    color: b.color,
-                })),
-                nowIndicator: true,
-                height: "auto",
-                editable: true,
-                selectable: true,
-                selectMirror: true,
-                dayMaxEvents: true,
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: false,
-
-                },
-
-                eventTimeFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: false,
-                },
-                eventClick: function (info) {
-                    const event = info.event;
-                    console.log(event.start);
-                    console.log(event.start?.toISOString());
-                    modal.event = {
-                        id: event.id,
-                        title: event.title,
-                        start: event.start,
-                        end: event.end,
-                        duration: (event.end!.getTime() - event.start!.getTime()) / 60000 || 0,
-                    };
-                    modalRef.value?.showModal();
-                    info.jsEvent.preventDefault();
-                },
-
-                select: function (info) {
-                    console.log(info);
-                    modalRef.value?.showModal();
-                },
-                datesSet: (info) => {
-                    console.log("Current view:", info.view.type);
-                    viewSig.value = info.view.type
-                    startDate.value = info.startStr
-                    console.log("Start date:", info.startStr)
-                },
-            });
+            const calendar = AestheticCalendar(calendarRef.value, EventClick, SelectClick, viewSig, startDate, endDate)
             calendar.render();
             calendarInstance.value = noSerialize(calendar);
         }
-    });
+    }));
 
-    useVisibleTask$(({track})=>{
-        track(()=>events)
-        const calendar = calendarInstance.value!;
+
+
+    useTask$(async ({ track }) => {
+        track(() => startDate.value || endDate.value)
+        track(() => selectedTechnicians.value)
+        if (!calendarInstance.value) return;
+
+        const calendar = calendarInstance.value;
         calendar.removeAllEvents();
-        events.forEach((b) => {
-            calendar.addEvent({
-                id: b.id,
-                title: b.technician_name + " | " + b.client_name + " | " + b.services_names.join(", "),
-                start: b.datetime,
-                end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
-                color: b.color,
 
+        if (selectedTechnicians.value) {
+            const bookings = selectedTechnicians.value.map(async (technician) => {
+                return await fetchBookings(technician.id, technician.name, services.value.data || [], startDate.value.toISOString(), endDate.value.toISOString());
             });
-        });
 
+            const BookingResponse = await Promise.all(bookings);
+            const events = BookingResponse.map((b) => b.data || []).flat();
+            events.forEach((b) => {
+                calendar.addEvent({
+                    id: b.id,
+                    title: b.technician_name + " | " + b.client_name + " | " + b.services_names.join(", "),
+                    start: b.datetime,
+                    end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
+                    color: b.color,
+
+                });
+            });
+        } else {
+            calendar.removeAllEvents();
+        }
     })
 
     return <>

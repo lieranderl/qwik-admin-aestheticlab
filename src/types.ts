@@ -75,6 +75,7 @@ export interface TechnicianResponse {
   name: string;
   email: string;
   role: string;
+  color?: string;
 }
 
 export interface ClientResponse {

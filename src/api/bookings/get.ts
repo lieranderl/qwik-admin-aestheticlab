@@ -61,8 +61,6 @@ export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse
 
 export async function fetchBookings(technician_id: string, technician_name: string, services: ServiceResponse[], from: string, to: string): Promise<APIResponse<BookingResponse[]>> {
 
-  console.log("Fetching bookings", technician_id, technician_name, services, from, to);
-
   let db_query = supabaseBrowser
     .from("bookings")
     .select(`*, clients(name, phone)`)
@@ -80,16 +78,12 @@ export async function fetchBookings(technician_id: string, technician_name: stri
     return { success: false, error: error.message };
   }
 
-  const color = technician_id === "8e5e024b-a05e-45ac-a58c-044ae3d79d56" ? "red" : "blue";
-
-
   const result: BookingResponse[] = data.map((b: any) => ({
     ...b,
     client_name: b.clients.name,
     client_phone: b.clients.phone,
     client_email: b.clients.email,
     technician_name: technician_name,
-    color: color,
     services_names: services.filter((s: ServiceResponse) => b.services.includes(s.id)).map((s: ServiceResponse) => s.name),
   }));
 
