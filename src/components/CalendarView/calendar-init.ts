@@ -4,7 +4,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { EventResizeDoneArg } from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import luxonPlugin from "@fullcalendar/luxon3";
-import { Signal } from "@builder.io/qwik";
+import { CalendarStore } from "~/types";
+// import { Signal } from "@builder.io/qwik";
 
 export const AestheticCalendar = (
     calendarRef: HTMLElement,
@@ -12,12 +13,10 @@ export const AestheticCalendar = (
     selectEvent: ((arg: DateSelectArg) => void),
     eventResize: ((arg: EventResizeDoneArg) => void),
     eventDrop: ((arg: EventDropArg) => void),
-    viewSig: Signal<string>,
-    startDate: Signal<Date>,
-    endDate: Signal<Date>
+    calendarStore: CalendarStore
 ) => new Calendar(calendarRef, {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, luxonPlugin],
-    initialView: viewSig.value,
+    initialView: calendarStore.viewType,
     titleFormat: 'd LLLL yyyy',
     views: {
         week: {
@@ -53,8 +52,11 @@ export const AestheticCalendar = (
     eventResize: eventResize,
     eventDrop: eventDrop,
     datesSet: (info) => {
-        startDate.value = info.view.activeStart
-        endDate.value = info.view.activeEnd
-      
+        calendarStore.activeStart = info.view.activeStart
+        calendarStore.activeEnd = info.view.activeEnd
+        calendarStore.viewType = info.view.type 
+        calendarStore.currentStart = info.view.currentStart
+        calendarStore.currentEnd = info.view.currentEnd
+
     },
 });

@@ -163,3 +163,13 @@ export type GetBookingsQuery = {
 // POST: /api/bookings/create
 export type CreateBookingRequest = CreateBookingPayload;
 export type CreateBookingResult = APIResponse<BookingResponse>;
+
+
+export type CalendarStore = {
+  activeStart: Date;
+  activeEnd: Date;
+  viewType: string;
+  events: BookingResponse[];
+  currentStart: Date;
+  currentEnd: Date;
+}
