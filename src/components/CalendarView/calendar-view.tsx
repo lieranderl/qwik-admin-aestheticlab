@@ -1,10 +1,11 @@
 import { component$, useSignal, noSerialize, type NoSerialize, useStore, Signal, useOnDocument, $, useTask$ } from "@builder.io/qwik";
-import { Calendar, DateSelectArg, EventClickArg } from "@fullcalendar/core";
+import { Calendar, DateSelectArg, EventClickArg, EventDropArg } from "@fullcalendar/core";
 import { TechnicianResponse } from "~/types";
 import { DateTime } from 'luxon';
 import { fetchBookings } from "~/api/bookings/get";
 import { useServices } from "~/routes/layout";
 import { AestheticCalendar } from "./calendar-init";
+import { EventResizeDoneArg } from "@fullcalendar/interaction/index.js";
 
 
 
@@ -53,10 +54,18 @@ export const BookingCalendar = component$(({ selectedTechnicians }: CalendarProp
         modalRef.value?.showModal();
     })
 
+    const eventResize = $((info: EventResizeDoneArg) => {
+        console.log(info);
+    })
+
+    const eventDrop = $((info: EventDropArg) => {
+        console.log(info);
+    })
+
 
     useOnDocument('DOMContentLoaded', $(() => {
         if (!calendarInstance.value && calendarRef.value) {
-            const calendar = AestheticCalendar(calendarRef.value, EventClick, SelectClick, viewSig, startDate, endDate)
+            const calendar = AestheticCalendar(calendarRef.value, EventClick, SelectClick, eventResize, eventDrop, viewSig, startDate, endDate)
             calendar.render();
             calendarInstance.value = noSerialize(calendar);
         }
@@ -74,7 +83,7 @@ export const BookingCalendar = component$(({ selectedTechnicians }: CalendarProp
 
         if (selectedTechnicians.value) {
             const bookings = selectedTechnicians.value.map(async (technician) => {
-                return await fetchBookings(technician.id, technician.name, services.value.data || [], startDate.value.toISOString(), endDate.value.toISOString());
+                return await fetchBookings(technician.id, technician.name, technician.color, services.value.data || [], startDate.value.toISOString(), endDate.value.toISOString());
             });
 
             const BookingResponse = await Promise.all(bookings);
@@ -85,7 +94,7 @@ export const BookingCalendar = component$(({ selectedTechnicians }: CalendarProp
                     title: b.technician_name + " | " + b.client_name + " | " + b.services_names.join(", "),
                     start: b.datetime,
                     end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
-                    color: b.color,
+                    color: b.color
 
                 });
             });

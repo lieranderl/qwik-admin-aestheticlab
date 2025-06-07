@@ -68,6 +68,7 @@ export interface Technician {
   about_fr: string;
   about_uk: string;
   role: string;
+  color: string
 }
 
 export interface TechnicianResponse {
@@ -75,7 +76,7 @@ export interface TechnicianResponse {
   name: string;
   email: string;
   role: string;
-  color?: string;
+  color: string
 }
 
 export interface ClientResponse {

@@ -27,6 +27,7 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
     );
   });
 
+
   // Sync selected IDs to selectedTechnicians signal (parent)
   useTask$(({ track }) => {
     track(() => selectedIds.value);
@@ -34,6 +35,7 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
       selectedIds.value.includes(tech.id)
     );
   });
+
 
   const toggleSelect = $((id: string) => {
     if (selectedIds.value.includes(id)) {
@@ -52,20 +54,18 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
       {/* Selected badges */}
       <div class="flex flex-wrap gap-1 mb-1">
         {selectedTechnicians.value.map((tech) => (
-          <span
-            key={tech.id}
-            class="bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center space-x-1"
-          >
-            <span>{tech.name}</span>
-            <button
-              onClick$={() => removeSelected(tech.id)}
-              class="font-bold hover:text-gray-200"
-              aria-label={`Remove ${tech.name}`}
-              type="button"
-            >
-              &times;
-            </button>
-          </span>
+          <div key={tech.id} class="bg-blue-100 rounded px-2 py-1 mb-1 flex flex-col">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium">{tech.name}</span>
+              <button
+                onClick$={() => removeSelected(tech.id)}
+                class="text-red-500 hover:text-red-700"
+                type="button"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 

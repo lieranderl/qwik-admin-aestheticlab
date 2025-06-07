@@ -44,7 +44,7 @@ export async function fetchClient(client_id: string): Promise<APIResponse<Client
 export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse[]>> {
   const { data, error } = await supabaseBrowser
     .from("technicians")
-    .select(`id, name, email, role, active`)
+    .select(`id, name, email, role, active, color`)
     .eq("active", true);
 
   console.log("Technicians fetched", data, error);
@@ -59,7 +59,7 @@ export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse
 }
 
 
-export async function fetchBookings(technician_id: string, technician_name: string, services: ServiceResponse[], from: string, to: string): Promise<APIResponse<BookingResponse[]>> {
+export async function fetchBookings(technician_id: string, technician_name: string, color:string, services: ServiceResponse[], from: string, to: string): Promise<APIResponse<BookingResponse[]>> {
 
   let db_query = supabaseBrowser
     .from("bookings")
@@ -84,6 +84,7 @@ export async function fetchBookings(technician_id: string, technician_name: stri
     client_phone: b.clients.phone,
     client_email: b.clients.email,
     technician_name: technician_name,
+    color: color,
     services_names: services.filter((s: ServiceResponse) => b.services.includes(s.id)).map((s: ServiceResponse) => s.name),
   }));
 

@@ -45,9 +45,10 @@
     "@fullcalendar/list": "^6.1.17",
     "@fullcalendar/luxon3": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
-    "@supabase/supabase-js": "^2.49.10",
+    "@supabase/supabase-js": "^2.50.0",
     "@tailwindcss/vite": "^4.1.8",
     "luxon": "^3.6.1",
-    "tailwindcss": "^4.1.8"
+    "tailwindcss": "^4.1.8",
+    "vanilla-colorful": "^0.7.2"
   }
 }
