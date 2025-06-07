@@ -1,6 +1,7 @@
 import { $, component$, useSignal, useTask$ } from "@builder.io/qwik";
 import type { Signal } from "@builder.io/qwik";
 import { TechnicianResponse } from "~/types";
+import { HiChevronDownSolid } from "@qwikest/icons/heroicons"
 
 
 interface Props {
@@ -46,19 +47,49 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
 
   return (
     <div class="w-full">
-      <div class="form-control">
-        <label class="label text-sm font-medium">Select Technicians</label>
-        <input
-          type="text"
-          placeholder="Search technicians..."
-          class="input input-bordered"
-          bind:value={search}
-          onFocus$={() => (dropdownOpen.value = true)}
-          onBlur$={() => setTimeout(() => (dropdownOpen.value = false), 200)}
-        />
+      <div class="dropdown">
+        <div tabIndex={0} role="button" >
+
+          <label class="input">
+            <input type="text" class="grow" placeholder="Search technicians..." bind:value={search}
+              onBlur$={() => setTimeout(() => (dropdownOpen.value = false), 200)} />
+            <HiChevronDownSolid />
+          </label>
+
+
+
+        </div>
+
+        <ul tabIndex={0} class="dropdown-content menu bg-base-100 rounded-box z-1 w-72 p-2 shadow-sm">
+          {filteredTechs.value.length === 0 ? (
+            <div class="p-2 text-sm text-gray-500">No technicians found</div>
+          ) : (
+            filteredTechs.value.map((tech) => (
+              <label
+                key={tech.id}
+                class="flex items-start gap-2 p-2 hover:bg-base-200 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-sm mt-1"
+                  checked={selectedIds.value.includes(tech.id)}
+                  onChange$={() => toggleSelect(tech.id)}
+                />
+                <div>
+                  <div class="font-semibold">{tech.name}</div>
+                  <div class="text-sm text-gray-500">{tech.email}</div>
+                  <div class="text-xs text-gray-400">{tech.role}</div>
+                </div>
+              </label>
+            ))
+          )}
+        </ul>
+
+
       </div>
 
-      {dropdownOpen.value && (
+
+      {/* {dropdownOpen.value && (
         <div class="mt-2 shadow-lg rounded-box border bg-base-100 max-h-52 overflow-auto z-50 absolute w-full">
           {filteredTechs.value.length === 0 ? (
             <div class="p-2 text-sm text-gray-500">No technicians found</div>
@@ -83,7 +114,7 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
             ))
           )}
         </div>
-      )}
+      )} */}
 
       {selectedTechnicians.value.length > 0 && (
         <div class="mt-4">

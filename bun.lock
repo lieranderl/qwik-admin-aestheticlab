@@ -9,7 +9,7 @@
         "@fullcalendar/list": "^6.1.17",
         "@fullcalendar/luxon3": "^6.1.17",
         "@fullcalendar/timegrid": "^6.1.17",
-        "@supabase/supabase-js": "^2.49.10",
+        "@supabase/supabase-js": "^2.50.0",
         "@tailwindcss/vite": "^4.1.8",
         "luxon": "^3.6.1",
         "tailwindcss": "^4.1.8",
@@ -19,6 +19,7 @@
         "@builder.io/qwik": "^1.14.1",
         "@builder.io/qwik-city": "^1.14.1",
         "@eslint/js": "latest",
+        "@qwikest/icons": "^0.0.13",
         "@types/luxon": "^3.6.2",
         "@types/node": "20.14.11",
         "daisyui": "^5.0.43",
@@ -188,6 +189,8 @@
     "@nodelib/fs.stat": ["@nodelib/fs.stat@2.0.5", "", {}, "sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A=="],
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
+
+    "@qwikest/icons": ["@qwikest/icons@0.0.13", "", { "peerDependencies": { "@builder.io/qwik": ">=1.0.0" } }, "sha512-e0wY8vmx0nDSUiuCATlk+ojTvdBV4txIGHHWjZW5SRkv4XB8H9+3WSDcLPz0ItUdRyzcrohE9k2jtQI/98aRPA=="],
 
     "@rollup/pluginutils": ["@rollup/pluginutils@5.1.4", "", { "dependencies": { "@types/estree": "^1.0.0", "estree-walker": "^2.0.2", "picomatch": "^4.0.2" }, "peerDependencies": { "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0" }, "optionalPeers": ["rollup"] }, "sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ=="],
 

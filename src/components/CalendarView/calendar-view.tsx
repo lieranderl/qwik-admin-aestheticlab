@@ -94,7 +94,8 @@ export const BookingCalendar = component$(({ selectedTechnicians }: CalendarProp
                     title: b.technician_name + " | " + b.client_name + " | " + b.services_names.join(", "),
                     start: b.datetime,
                     end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
-                    color: b.color
+                    color: b.color,
+                    textColor: "black"
 
                 });
             });

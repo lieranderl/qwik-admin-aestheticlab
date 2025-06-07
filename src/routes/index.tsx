@@ -13,7 +13,7 @@ export default component$(() => {
   return <div class="flex flex-col lg:flex-row gap-4 p-4">
   {/* Sidebar with technician multi-select */}
   <div class="lg:w-1/4 w-full">
-    <div class="card shadow-md bg-base-100">
+    <div class="card bg-base-100">
       <div class="card-body">
         <h2 class="card-title text-lg mb-2">Technicians</h2>
         <TechMultiSelect technicians={technicians.value.data || []} selectedTechnicians={filteredTechnicians} />
@@ -23,7 +23,7 @@ export default component$(() => {
 
   {/* Main calendar view */}
   <div class="lg:w-3/4 w-full">
-    <div class="card shadow-md bg-base-100 h-full">
+    <div class="card bg-base-100 h-full">
       <div class="card-body p-4">
         <BookingCalendar selectedTechnicians={filteredTechnicians} />
       </div>
