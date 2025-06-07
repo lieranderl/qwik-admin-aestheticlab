@@ -1,2 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
 @import "tailwindcss";
+
+@theme {
+	--font-inter: "Inter", "sans-serif";
+}
+
+html {
+	scroll-behavior: smooth;
+    background-color: #f4f5f1;
+}
+
+@layer components {
+	.custom-container {
+		@apply container mx-auto ;
+	}
+}
+
+.fc-event-title {
+    white-space: pre-line;
+  }
+
+
 @plugin "daisyui";
+
+@plugin "daisyui/theme" {
+	/* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+	name: "Aesthetic";
+	/* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+	default: true;
+	/* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+	prefersdark: true;
+	color-scheme: "light";
+	--color-base-100: #f4f5f1;
+	--color-base-200: #e1e4d6;
+	--color-base-300: #d0d2c2;
+	--color-base-content: #2e2e2c;
+	--color-primary: #8b9687;
+	--color-primary-content: #f1f4f1;
+	--color-secondary: #6a7b8c;
+	--color-secondary-content: #f4f7f9;
+	--color-accent: #4ca3a2;
+	--color-accent-content: #f9fbfa;
+	--color-neutral: #d1d5d8;
+	--color-neutral-content: #4a4f53;
+	--color-info: #5a7f92;
+	--color-info-content: #f1f6f8;
+	--color-success: #6f8e56;
+	--color-success-content: #e9f4d7;
+	--color-warning: #f2a73d;
+	--color-warning-content: #fff9f0;
+	--color-error: #d15556;
+	--color-error-content: #fce9e8;
+	--radius-selector: 0.5rem;
+	--radius-field: 0.5rem;
+	--radius-box: 0.5rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.21875rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}

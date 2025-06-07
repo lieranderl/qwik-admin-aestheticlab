@@ -88,7 +88,7 @@ export const BookingCalendar = component$(({ selectedTechnicians, calendarStore 
             calendarStore.events.forEach((b) => {
                 calendar.addEvent({
                     id: b.id,
-                    title: b.technician_name + " | " + b.client_name + " | " + b.services_names.join(", "),
+                    title: b.technician_name.charAt(0) + " | " + b.client_name + '\n ' + b.services_names.join(", "),
                     start: b.datetime,
                     end: new Date(new Date(b.datetime).getTime() + b.duration * 60000).toISOString(),
                     color: b.color,
@@ -96,7 +96,7 @@ export const BookingCalendar = component$(({ selectedTechnicians, calendarStore 
                     extendedProps: {
                         tech_id: b.technician_id
                     }
-                    
+
 
                 });
             });

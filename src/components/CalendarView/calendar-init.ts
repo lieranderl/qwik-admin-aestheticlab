@@ -23,6 +23,12 @@ export const AestheticCalendar = (
             dayHeaderFormat: { day: 'numeric', weekday: 'short' }
         }
     },
+    businessHours: {
+        // days of week. an array of zero-based day of week integers (0=Sunday)
+        daysOfWeek: [ 0, 1, 2, 3, 4, 5, 6], 
+        startTime: '10:00', 
+        endTime: '18:00', 
+      },
     firstDay: 1,
     headerToolbar: {
         left: "prev,next today",
@@ -41,7 +47,6 @@ export const AestheticCalendar = (
         hour12: false,
 
     },
-
     eventTimeFormat: {
         hour: 'numeric',
         minute: '2-digit',
