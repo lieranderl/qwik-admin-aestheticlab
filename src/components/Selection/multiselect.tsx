@@ -1,4 +1,4 @@
-import { $, component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { $, component$, useOnDocument, useSignal, useTask$ } from "@builder.io/qwik";
 import type { Signal } from "@builder.io/qwik";
 import { TechnicianResponse } from "~/types";
 import { HiChevronDownSolid } from "@qwikest/icons/heroicons"
@@ -15,9 +15,10 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
   const dropdownOpen = useSignal(false);
   const filteredTechs = useSignal<TechnicianResponse[]>([]);
 
-  useTask$(() => {
+
+  useOnDocument("DOMContentLoaded", $(()=>{
     selectedIds.value = technicians.map((tech) => tech.id);
-  });
+  }))
 
   useTask$(({ track }) => {
     track(() => search.value);
