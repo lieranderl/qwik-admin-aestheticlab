@@ -12,8 +12,6 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
   const search = useSignal('');
   const selectedIds = useSignal<string[]>([]);
   const dropdownOpen = useSignal(false);
-
-  // Filter technicians by search term
   const filteredTechs = useSignal<TechnicianResponse[]>([]);
 
   useTask$(() => {
@@ -27,15 +25,12 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
     );
   });
 
-
-  // Sync selected IDs to selectedTechnicians signal (parent)
   useTask$(({ track }) => {
     track(() => selectedIds.value);
     selectedTechnicians.value = technicians.filter((tech) =>
       selectedIds.value.includes(tech.id)
     );
   });
-
 
   const toggleSelect = $((id: string) => {
     if (selectedIds.value.includes(id)) {
@@ -50,60 +45,62 @@ export const TechMultiSelect = component$(({ technicians, selectedTechnicians }:
   });
 
   return (
-    <div class="relative w-80">
-      {/* Selected badges */}
-      <div class="flex flex-wrap gap-1 mb-1">
-        {selectedTechnicians.value.map((tech) => (
-          <div key={tech.id} class="bg-blue-100 rounded px-2 py-1 mb-1 flex flex-col">
-            <div class="flex justify-between items-center">
-              <span class="text-sm font-medium">{tech.name}</span>
-              <button
-                onClick$={() => removeSelected(tech.id)}
-                class="text-red-500 hover:text-red-700"
-                type="button"
-              >
-                &times;
-              </button>
-            </div>
-          </div>
-        ))}
+    <div class="w-full">
+      <div class="form-control">
+        <label class="label text-sm font-medium">Select Technicians</label>
+        <input
+          type="text"
+          placeholder="Search technicians..."
+          class="input input-bordered"
+          bind:value={search}
+          onFocus$={() => (dropdownOpen.value = true)}
+          onBlur$={() => setTimeout(() => (dropdownOpen.value = false), 200)}
+        />
       </div>
 
-      {/* Dropdown input */}
-      <input
-        type="text"
-        class="input input-bordered w-full"
-        placeholder="Search and select technicians..."
-        bind:value={search}
-        onFocus$={() => (dropdownOpen.value = true)}
-        onBlur$={() => setTimeout(() => (dropdownOpen.value = false), 150)}
-      />
-
-      {/* Dropdown options */}
       {dropdownOpen.value && (
-        <div class="absolute z-10 w-full max-h-48 overflow-auto border rounded bg-white mt-1 shadow-lg">
+        <div class="mt-2 shadow-lg rounded-box border bg-base-100 max-h-52 overflow-auto z-50 absolute w-full">
           {filteredTechs.value.length === 0 ? (
-            <div class="p-2 text-gray-500">No technicians found</div>
+            <div class="p-2 text-sm text-gray-500">No technicians found</div>
           ) : (
             filteredTechs.value.map((tech) => (
               <label
                 key={tech.id}
-                class="flex items-center space-x-2 p-2 cursor-pointer hover:bg-gray-100"
+                class="flex items-start gap-2 p-2 hover:bg-base-200 cursor-pointer"
               >
                 <input
                   type="checkbox"
+                  class="checkbox checkbox-sm mt-1"
                   checked={selectedIds.value.includes(tech.id)}
                   onChange$={() => toggleSelect(tech.id)}
-                  class="checkbox"
                 />
                 <div>
-                  <div class="font-bold">{tech.name}</div>
-                  <div class="text-sm text-gray-600">{tech.email}</div>
+                  <div class="font-semibold">{tech.name}</div>
+                  <div class="text-sm text-gray-500">{tech.email}</div>
                   <div class="text-xs text-gray-400">{tech.role}</div>
                 </div>
               </label>
             ))
           )}
+        </div>
+      )}
+
+      {selectedTechnicians.value.length > 0 && (
+        <div class="mt-4">
+          <div class="flex flex-wrap gap-2">
+            {selectedTechnicians.value.map((tech) => (
+              <div key={tech.id} class="badge badge-soft badge-primary gap-1">
+                {tech.name}
+                <button
+                  type="button"
+                  class="ml-1 text-error hover:text-red-700"
+                  onClick$={() => removeSelected(tech.id)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
