@@ -1,13 +1,18 @@
 import { supabaseBrowser } from "~/supabase/client";
-import { APIResponse, BookingResponse, ClientResponse, ServiceResponse, TechnicianResponse } from "~/types";
+import type {
+  APIResponse,
+  BookingResponse,
+  ClientResponse,
+  ServiceResponse,
+  TechnicianResponse,
+} from "~/types";
 
 // fetch all services
 export async function fetchServices(): Promise<APIResponse<ServiceResponse[]>> {
-
   // if active is true, then fetch only active services
   const { data, error } = await supabaseBrowser
     .from("services")
-    .select(`id, name, price, duration, active`)
+    .select("id, name, price, duration, active")
     .eq("active", true);
 
   console.log("Services fetched", data, error);
@@ -21,12 +26,13 @@ export async function fetchServices(): Promise<APIResponse<ServiceResponse[]>> {
   return { success: true, data: result };
 }
 
-
 // get client details by id
-export async function fetchClient(client_id: string): Promise<APIResponse<ClientResponse>> {
+export async function fetchClient(
+  client_id: string,
+): Promise<APIResponse<ClientResponse>> {
   const { data, error } = await supabaseBrowser
     .from("clients")
-    .select(`id, name, email, phone`)
+    .select("id, name, email, phone")
     .eq("id", client_id);
 
   console.log("Client details fetched", data, error);
@@ -41,10 +47,12 @@ export async function fetchClient(client_id: string): Promise<APIResponse<Client
 }
 
 // get all technicians
-export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse[]>> {
+export async function fetchTechnicians(): Promise<
+  APIResponse<TechnicianResponse[]>
+> {
   const { data, error } = await supabaseBrowser
     .from("technicians")
-    .select(`id, name, email, role, active, color`)
+    .select("id, name, email, role, active, color")
     .eq("active", true);
 
   console.log("Technicians fetched", data, error);
@@ -58,12 +66,17 @@ export async function fetchTechnicians(): Promise<APIResponse<TechnicianResponse
   return { success: true, data: result };
 }
 
-
-export async function fetchBookings(technician_id: string, technician_name: string, color:string, services: ServiceResponse[], from: string, to: string): Promise<APIResponse<BookingResponse[]>> {
-
+export async function fetchBookings(
+  technician_id: string,
+  technician_name: string,
+  color: string,
+  services: ServiceResponse[],
+  from: string,
+  to: string,
+): Promise<APIResponse<BookingResponse[]>> {
   let db_query = supabaseBrowser
     .from("bookings")
-    .select(`*, clients(name, phone)`)
+    .select("*, clients(name, phone)")
     .order("datetime", { ascending: true });
 
   if (from) db_query = db_query.gte("datetime", from);
@@ -78,6 +91,7 @@ export async function fetchBookings(technician_id: string, technician_name: stri
     return { success: false, error: error.message };
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const result: BookingResponse[] = data.map((b: any) => ({
     ...b,
     client_name: b.clients.name,
@@ -85,9 +99,10 @@ export async function fetchBookings(technician_id: string, technician_name: stri
     client_email: b.clients.email,
     technician_name: technician_name,
     color: color,
-    services_names: services.filter((s: ServiceResponse) => b.services.includes(s.id)).map((s: ServiceResponse) => s.name),
+    services_names: services
+      .filter((s: ServiceResponse) => b.services.includes(s.id))
+      .map((s: ServiceResponse) => s.name),
   }));
 
   return { success: true, data: result };
 }
-
