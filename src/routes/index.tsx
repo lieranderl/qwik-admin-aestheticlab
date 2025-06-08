@@ -1,27 +1,22 @@
 import { component$, useSignal, useStore } from "@builder.io/qwik";
-import { CalendarStore, TechnicianResponse } from "~/types";
-import { DocumentHead } from "@builder.io/qwik-city";
-import { TechMultiSelect } from "~/components/Selection/multiselect";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { BookingCalendar } from "~/components/CalendarView/calendar-view";
-import { useTechnicians } from "./layout";
+import { TechMultiSelect } from "~/components/Selection/multiselect";
 import { Statistics } from "~/components/Stats/statistics";
-
-
-
-
+import type { CalendarStore, TechnicianResponse } from "~/types";
+import { useTechnicians } from "./layout";
 
 export default component$(() => {
   const technicians = useTechnicians();
   const filteredTechnicians = useSignal<TechnicianResponse[]>([]);
   const calendarStore = useStore({
-    activeStart: new Date,
-    activeEnd: new Date,
+    activeStart: new Date(),
+    activeEnd: new Date(),
     viewType: "timeGridWeek",
     events: [],
-    currentEnd: new Date,
-    currentStart: new Date
-  } as CalendarStore)
-
+    currentEnd: new Date(),
+    currentStart: new Date(),
+  } as CalendarStore);
 
   return (
     <div class="flex flex-col lg:flex-row gap-4 p-4">
@@ -34,16 +29,23 @@ export default component$(() => {
           selectedTechnicians={filteredTechnicians}
         />
 
-
         {/* Statistics */}
-        <Statistics selectedTechnicians={filteredTechnicians} calendarStore={calendarStore} />
+        <Statistics
+          selectedTechnicians={filteredTechnicians}
+          calendarStore={calendarStore}
+        />
+
+
       </div>
 
       {/* Main calendar view */}
       <div class="lg:w-3/4 w-full">
         <div class="card shadow-md h-full">
           <div class="card-body p-4">
-            <BookingCalendar selectedTechnicians={filteredTechnicians} calendarStore={calendarStore} />
+            <BookingCalendar
+              selectedTechnicians={filteredTechnicians}
+              calendarStore={calendarStore}
+            />
           </div>
         </div>
       </div>
