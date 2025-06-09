@@ -20,6 +20,7 @@ export const AestheticCalendar = (
   selectEvent: (arg: DateSelectArg) => void,
   eventResize: (arg: EventResizeDoneArg) => void,
   eventDrop: (arg: EventDropArg) => void,
+  eventMouseEnter: (arg: EventClickArg) => void,
   calendarStore: CalendarStore,
 ) =>
   new Calendar(calendarRef, {
@@ -66,6 +67,7 @@ export const AestheticCalendar = (
       hour12: false,
     },
     eventClick: eventClick,
+    eventMouseEnter: eventMouseEnter,
     select: selectEvent,
     eventResize: eventResize,
     eventDrop: eventDrop,

@@ -1,6 +1,5 @@
-import { component$, Slot } from '@builder.io/qwik';
-import { RequestHandler, routeLoader$ } from '@builder.io/qwik-city';
-import { fetchServices, fetchTechnicians } from '~/api/bookings/get';
+import { component$, Slot } from "@builder.io/qwik";
+import type { RequestHandler } from "@builder.io/qwik-city";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   cacheControl({
@@ -8,15 +7,6 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
     maxAge: 5,
   });
 };
-
-export const useTechnicians = routeLoader$(async () => {
-  return fetchTechnicians();
-});
-
-export const useServices = routeLoader$(async () => {
-  return fetchServices();
-});
-
 
 export default component$(() => {
   return (
